@@ -16,6 +16,7 @@
 
 package net.web2;
 
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -99,7 +100,9 @@ public class TileView extends View {
     private final Paint mPaint = new Paint();
     
     void init(){
-
+        mXTileCount=15;
+        mYTileCount=10;
+        mTileSize = 50;
         initTileView();
         mTileGrid = new int[][]{
         		{1,1,1,1,0,0,0,0,0,0,0,0,0,0,0},
@@ -120,19 +123,30 @@ public class TileView extends View {
     public void ajout(int x, int y){
     	if (mTileGrid[x][y]==VIDE){
     	mTileGrid[x][y] = TOUR;
+    	invalidate();
     	}
     }
     
     public void suppression(int x, int y){
     	if (mTileGrid[x][y] == TOUR){
     		mTileGrid[x][y] = VIDE;
+    		invalidate();
     	}
     }
     
     public TileView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init();
-        };    
+    }
+        
+        
+/*       
+  		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TileView);
+
+        mTileSize = a.getInt(R.styleable.TileView_tileSize, 12);
+        
+        a.recycle();*/
+    
 
     public TileView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -244,8 +258,14 @@ public class TileView extends View {
 	    	// Conversion des event.x et event.y
 	    	int i = getI(event.getX());
 	    	int j = getJ(event.getY());
-			if(mTileGrid[i][j] == VIDE)		ajout(i, j); // méthode ajout d'une tour
-			else if(mTileGrid[i][j] == TOUR)	suppression(i, j); // méthode suppresion d'une tour
+			if(mTileGrid[i][j] == VIDE){	
+				ajout(i, j); // méthode ajout d'une tour
+				
+				}
+			else if(mTileGrid[i][j] == TOUR){	
+				suppression(i, j); // méthode suppresion d'une tour
+				
+				}
 		}
 		return true;
 	}
