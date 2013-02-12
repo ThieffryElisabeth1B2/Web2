@@ -17,6 +17,8 @@
 package net.web2;
 
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -51,10 +53,6 @@ public class TileView extends View {
 
     protected static int mXTileCount;
     protected static int mYTileCount;
-
-    private static int mXOffset;
-
-    private static int mYOffset;
     
     private static final int VIDE = 0;
     private static final int ROUTE = 1;
@@ -63,10 +61,13 @@ public class TileView extends View {
     private int mTileWidth;
     private int mTileHeight;
 
-    private Monstre ENEMY;
+    private Monstre ennemi;
+	private Wave vague_monstres;
 
     private Matrix transform;
 	private Matrix intransform;
+	
+	private Bitmap bmp_ennemi;
 
     /**
      * A hash that maps integer handles specified by the subclasser to the
@@ -79,6 +80,7 @@ public class TileView extends View {
      * index of the tile that should be drawn at that locations
      */
     private int[][] mTileGrid;
+
     
     private void initTileView() {
         setFocusable(true);
@@ -87,6 +89,7 @@ public class TileView extends View {
         loadTile(VIDE, r.getDrawable(R.drawable.herbe));
         loadTile(TOUR, r.getDrawable(R.drawable.tour));
         loadTile(ROUTE, r.getDrawable(R.drawable.chemin));
+        bmp_ennemi = loadImage(R.drawable.ennemi);
         update();
     }
     
@@ -109,6 +112,7 @@ public class TileView extends View {
         		};
         mYTileCount = mTileGrid.length;
         mXTileCount = mTileGrid[0].length;
+		vague_monstres = new Wave(bmp_ennemi);
     }
 
     public void ajout(int x, int y){
@@ -129,16 +133,14 @@ public class TileView extends View {
         init();
     }
   
-
-    
-        
         
 /*       
   		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.TileView);
 
         mTileSize = a.getInt(R.styleable.TileView_tileSize, 12);
         
-        a.recycle();*/
+        a.recycle();
+*/
     
 
     public TileView(Context context, AttributeSet attrs) {
@@ -172,20 +174,26 @@ public class TileView extends View {
      * @param tile
      */
     public void loadTile(int key, Drawable tile) {
-
     	mTileWidth = tile.getIntrinsicWidth();
     	mTileHeight = tile.getIntrinsicHeight();
         Bitmap bitmap = Bitmap.createBitmap(mTileWidth, mTileHeight, Bitmap.Config.ARGB_8888);
-
         Canvas canvas = new Canvas(bitmap);
-
         tile.setBounds(0, 0, mTileWidth, mTileHeight);
-
         tile.draw(canvas);
-        
         mTileArray[key] = bitmap;
-        
     }
+    
+	public Bitmap loadImage(int key) {
+		Resources r = this.getContext().getResources();
+		Drawable drawable = r.getDrawable(key);
+		int x = drawable.getIntrinsicWidth();
+		int y = drawable.getIntrinsicHeight();
+		Bitmap bitmap = Bitmap.createBitmap(x, y, Bitmap.Config.ARGB_8888);
+		Canvas canvas = new Canvas(bitmap);
+		drawable.setBounds(0, 0, x, y);
+		drawable.draw(canvas);
+		return bitmap;
+	}
 
     /**
      * Resets all tiles to 0 (empty)
@@ -230,6 +238,7 @@ public class TileView extends View {
                 }
             }
         }
+		vague_monstres.draw(canvas);
     }
     
 	private RefreshHandler mRedrawHandler = new RefreshHandler();
